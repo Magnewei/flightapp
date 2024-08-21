@@ -15,6 +15,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.logging.Filter;
+import java.util.stream.Collectors;
 
 /**
  * Purpose:
@@ -23,9 +25,9 @@ import java.util.*;
  */
 public class FlightReader {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         FlightReader flightReader = new FlightReader();
-        try {
+       /* try {
             List<DTOs.FlightDTO> flightList = flightReader.getFlightsFromFile("flights.json");
             List<DTOs.FlightInfo> flightInfoList = flightReader.getFlightInfoDetails(flightList);
             flightInfoList.forEach(f->{
@@ -33,15 +35,34 @@ public class FlightReader {
             });
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+
+        //Add a new feature (Sort flighttime by duration)
+        List<DTOs.FlightDTO> flightList = flightReader.getFlightsFromFile("flights.json");
+        List<DTOs.FlightInfo> flightInfoList = flightReader.getFlightInfoDetails(flightList);
+      List<DTOs.FlightInfo> SortByDuration = flightInfoList.stream()
+               .sorted(Comparator.comparing(DTOs.FlightInfo::getDuration))
+               .collect(Collectors.toList());
+
+      /*  SortByDuration.forEach(f->{
+            System.out.println("\n"+f);
+        });*/
+
+        //ADD a new feature (Filter by Status)
+List<DTOs.FlightDTO> FilterByStatus =
+        flightList.stream()
+                .filter(flightInfo -> flightInfo.getFlight_status().equals("scheduled"))
+                .collect(Collectors.toList());
+        FilterByStatus.forEach(f->{
+            System.out.println("\n"+f);
+        });
     }
 
-
+//test
 //    public List<FlightDTO> jsonFromFile(String fileName) throws IOException {
 //        List<FlightDTO> flights = getObjectMapper().readValue(Paths.get(fileName).toFile(), List.class);
 //        return flights;
 //    }
-
 
     public List<DTOs.FlightInfo> getFlightInfoDetails(List<DTOs.FlightDTO> flightList) {
         List<DTOs.FlightInfo> flightInfoList = flightList.stream().map(flight -> {
