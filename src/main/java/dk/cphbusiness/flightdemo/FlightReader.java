@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.logging.Filter;
 import java.util.stream.Collectors;
 
 /**
@@ -36,14 +37,23 @@ public class FlightReader {
             e.printStackTrace();
         }*/
 
+        //Add a new feature (Sort flighttime by duration)
         List<DTOs.FlightDTO> flightList = flightReader.getFlightsFromFile("flights.json");
         List<DTOs.FlightInfo> flightInfoList = flightReader.getFlightInfoDetails(flightList);
-        //Add a new feature (Sort flighttime by duration)
-      List<DTOs.FlightInfo> flightsbetween = flightInfoList.stream()
+      List<DTOs.FlightInfo> SortByDuration = flightInfoList.stream()
                .sorted(Comparator.comparing(DTOs.FlightInfo::getDuration))
                .collect(Collectors.toList());
 
-        flightsbetween.forEach(f->{
+      /*  SortByDuration.forEach(f->{
+            System.out.println("\n"+f);
+        });*/
+
+        //ADD a new feature (Filter by Status)
+List<DTOs.FlightDTO> FilterByStatus =
+        flightList.stream()
+                .filter(flightInfo -> flightInfo.getFlight_status().equals("scheduled"))
+                .collect(Collectors.toList());
+        FilterByStatus.forEach(f->{
             System.out.println("\n"+f);
         });
     }
